@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface ImagePreviewProps {
-  src: string | null
+  src?: string
   alt: string
   title: string
 }

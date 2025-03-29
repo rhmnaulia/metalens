@@ -1,86 +1,86 @@
 export interface MetadataResult {
   // Basic SEO
-  title: string | null
-  description: string | null
-  keywords: string | null
-  author: string | null
-  generator: string | null
-  themeColor: string | null
+  title?: string
+  description?: string
+  keywords?: string
+  author?: string
+  generator?: string
+  themeColor?: string
 
   // Open Graph
-  ogTitle: string | null
-  ogDescription: string | null
-  ogImage: string | null
-  ogImageWidth: string | null
-  ogImageHeight: string | null
-  ogImageAlt: string | null
-  ogUrl: string | null
-  ogType: string | null
-  ogSiteName: string | null
-  ogLocale: string | null
-  ogVideo: string | null
-  ogAudio: string | null
+  ogTitle?: string
+  ogDescription?: string
+  ogImage?: string
+  ogImageWidth?: string
+  ogImageHeight?: string
+  ogImageAlt?: string
+  ogUrl?: string
+  ogType?: string
+  ogSiteName?: string
+  ogLocale?: string
+  ogVideo?: string
+  ogAudio?: string
 
   // Facebook
-  fbAppId: string | null
-  fbPages: string | null
-  fbDomainVerification: string | null
+  fbAppId?: string
+  fbPages?: string
+  fbDomainVerification?: string
 
   // Twitter Cards
-  twitterCard: string | null
-  twitterTitle: string | null
-  twitterDescription: string | null
-  twitterImage: string | null
-  twitterImageAlt: string | null
-  twitterSite: string | null
-  twitterCreator: string | null
-  twitterDomainVerification: string | null
+  twitterCard?: string
+  twitterTitle?: string
+  twitterDescription?: string
+  twitterImage?: string
+  twitterImageAlt?: string
+  twitterSite?: string
+  twitterCreator?: string
+  twitterDomainVerification?: string
 
   // WhatsApp
-  whatsappTitle: string | null
-  whatsappDescription: string | null
-  whatsappImage: string | null
+  whatsappTitle?: string
+  whatsappDescription?: string
+  whatsappImage?: string
 
   // LinkedIn
-  linkedinTitle: string | null
-  linkedinDescription: string | null
-  linkedinImage: string | null
-  linkedinAuthor: string | null
+  linkedinTitle?: string
+  linkedinDescription?: string
+  linkedinImage?: string
+  linkedinAuthor?: string
 
   // Pinterest
-  pinterestDescription: string | null
-  pinterestImage: string | null
-  pinterestDomainVerification: string | null
+  pinterestDescription?: string
+  pinterestImage?: string
+  pinterestDomainVerification?: string
 
   // Technical
-  canonicalUrl: string | null
-  robots: string | null
-  viewport: string | null
-  charset: string | null
-  language: string | null
-  favicon: string | null
-  appleTouchIcon: string | null
-  manifest: string | null
+  canonicalUrl?: string
+  robots?: string
+  viewport?: string
+  charset?: string
+  language?: string
+  favicon?: string
+  appleTouchIcon?: string
+  manifest?: string
 
   // Article Specific
-  articlePublishedTime: string | null
-  articleModifiedTime: string | null
-  articleAuthor: string | null
-  articleSection: string | null
-  articleTags: string | null
+  articlePublishedTime?: string
+  articleModifiedTime?: string
+  articleAuthor?: string
+  articleSection?: string
+  articleTags?: string
 
   // Additional SEO
-  alternateUrls: { [key: string]: string } | null
-  prevPage: string | null
-  nextPage: string | null
-  rating: string | null
-  referrer: string | null
+  alternateUrls?: { [key: string]: string }
+  prevPage?: string
+  nextPage?: string
+  rating?: string
+  referrer?: string
 
   // Sitemap
-  sitemapUrl: string | null
+  sitemapUrl?: string
   sitemapExists: boolean
   robotsTxtExists: boolean
-  robotsTxtContent: string | null
+  robotsTxtContent?: string
 }
 
 export async function fetchMetadata(url: string): Promise<MetadataResult> {
@@ -93,11 +93,11 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
     // Helper function to get meta content
     const getMeta = (name: string, attr: string = 'name') =>
       doc.querySelector(`meta[${attr}="${name}"]`)?.getAttribute('content') ||
-      null
+      undefined
 
     // Helper function to get link href
     const getLink = (rel: string) =>
-      doc.querySelector(`link[rel="${rel}"]`)?.getAttribute('href') || null
+      doc.querySelector(`link[rel="${rel}"]`)?.getAttribute('href') || undefined
 
     // Get alternate URLs
     const alternateLinks = doc.querySelectorAll('link[rel="alternate"]')
@@ -112,10 +112,10 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
 
     // Check for sitemap and robots.txt
     const baseUrl = new URL(url).origin
-    let sitemapUrl = null
+    let sitemapUrl: string | undefined
     let sitemapExists = false
     let robotsTxtExists = false
-    let robotsTxtContent = null
+    let robotsTxtContent: string | undefined
 
     // Check robots.txt
     try {
@@ -160,7 +160,7 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
 
     return {
       // Basic SEO
-      title: doc.querySelector('title')?.textContent || null,
+      title: doc.querySelector('title')?.textContent || undefined,
       description: getMeta('description'),
       keywords: getMeta('keywords'),
       author: getMeta('author'),
@@ -220,8 +220,9 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       robots: getMeta('robots'),
       viewport: getMeta('viewport'),
       charset:
-        doc.querySelector('meta[charset]')?.getAttribute('charset') || null,
-      language: doc.querySelector('html')?.getAttribute('lang') || null,
+        doc.querySelector('meta[charset]')?.getAttribute('charset') ||
+        undefined,
+      language: doc.querySelector('html')?.getAttribute('lang') || undefined,
       favicon: getLink('icon') || getLink('shortcut icon'),
       appleTouchIcon: getLink('apple-touch-icon'),
       manifest: getLink('manifest'),
@@ -235,7 +236,7 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
 
       // Additional SEO
       alternateUrls:
-        Object.keys(alternateUrls).length > 0 ? alternateUrls : null,
+        Object.keys(alternateUrls).length > 0 ? alternateUrls : undefined,
       prevPage: getLink('prev'),
       nextPage: getLink('next'),
       rating: getMeta('rating'),

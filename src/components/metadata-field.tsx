@@ -6,7 +6,7 @@ import { ImagePreview } from '@/components/image-preview'
 
 interface MetadataFieldProps {
   label: string
-  value: string | null | undefined
+  value?: string
   type?: 'text' | 'url' | 'image'
   className?: string
 }
@@ -31,17 +31,15 @@ export function MetadataField({
         </p>
       )}
       {type === 'url' && (
-        <div className='text-sm text-muted-foreground'>
-          {formatUrl(value || null)}
-        </div>
+        <div className='text-sm text-muted-foreground'>{formatUrl(value)}</div>
       )}
       {type === 'image' && (
         <>
           <div className='text-sm text-muted-foreground mb-2'>
-            {formatUrl(value || null)}
+            {formatUrl(value)}
           </div>
           <ImagePreview
-            src={value || null}
+            src={value}
             alt={`${label} Preview`}
             title={`${label} Preview`}
           />

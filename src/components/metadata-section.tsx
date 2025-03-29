@@ -12,7 +12,7 @@ import { CopyAllButton } from '@/components/copy-button'
 interface MetadataSectionProps {
   title: string
   description: string
-  data: Record<string, string | null | undefined>
+  data: Record<string, string | undefined>
   children: React.ReactNode
 }
 
