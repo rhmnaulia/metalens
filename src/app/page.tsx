@@ -274,8 +274,8 @@ export default function Home() {
                 </MetadataSection>
 
                 <MetadataSection
-                  title='Twitter Card'
-                  description='Twitter-specific social media information'
+                  title='X/Twitter Card'
+                  description='X/Twitter-specific social media information'
                   data={{
                     cardType: metadata.twitterCard,
                     title: metadata.twitterTitle,
