@@ -1,29 +1,41 @@
 # MetaLens
 
-MetaLens is an instant SEO & Social Media Preview Tool that helps you analyze and preview your website's metadata, social cards, and technical tags in real-time. Get instant insights for better visibility and optimization.
+A metadata inspection tool that helps you analyze your website's metadata, social cards, and technical tags in real-time.
 
 ## Features
 
-- 🔍 Real-time SEO metadata analysis
-- 📱 Social media card preview (OpenGraph, Twitter Cards)
-- 🏷️ Technical meta tags inspection
-- 🎨 Beautiful and intuitive interface
-- ⚡ Fast and responsive design
-- 📱 Progressive Web App (PWA) support
+- 🔍 Basic SEO metadata inspection (title, description, keywords, etc.)
+- 🌐 Social media metadata preview
+  - Open Graph protocol support
+  - Facebook verification tags
+  - X/Twitter Cards
+  - Discord link preview
+  - Slack link preview
+- 🛠️ Technical metadata analysis
+  - Canonical URL
+  - Robots meta
+  - Language settings
+  - Viewport configuration
+  - Character encoding
+  - Favicon & touch icons
+- 📄 Sitemap & robots.txt inspection
+- 📱 Mobile-responsive design
+- 🌓 Dark mode support
+- ⚡ Copy to JSON functionality
 
 ## Tech Stack
 
 - **Framework**: Next.js 15
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Deployment**: Vercel
+- **UI**: Tailwind CSS + shadcn/ui
+- **State Management**: React Query
+- **Icons**: Lucide Icons
 
-## Getting Started
+## Development
 
 ### Prerequisites
 
-- Node.js 18.x or later
+- Node.js 20.x or later
 - pnpm (recommended) or npm
 
 ### Installation
@@ -48,20 +60,6 @@ MetaLens is an instant SEO & Social Media Preview Tool that helps you analyze an
    ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Usage
-
-1. Enter any website URL in the input field
-2. Click "Analyze" to start the inspection
-3. View detailed results for:
-   - SEO metadata
-   - Social media cards
-   - Technical meta tags
-   - Performance insights
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
