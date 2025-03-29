@@ -13,7 +13,7 @@ MetaLens is an instant SEO & Social Media Preview Tool that helps you analyze an
 
 ## Tech Stack
 
-- **Framework**: Next.js 14
+- **Framework**: Next.js 15
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
