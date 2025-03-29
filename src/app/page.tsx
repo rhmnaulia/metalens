@@ -378,6 +378,81 @@ export default function Home() {
                 </MetadataSection>
 
                 <MetadataSection
+                  title='Discord Preview'
+                  description='How your link appears when shared on Discord'
+                  data={{
+                    title: metadata.discordTitle,
+                    description: metadata.discordDescription,
+                    image: metadata.discordImage,
+                    type: metadata.discordType,
+                  }}
+                >
+                  <MetadataField label='Title' value={metadata.discordTitle} />
+                  <MetadataField
+                    label='Description'
+                    value={metadata.discordDescription}
+                  />
+                  <MetadataField
+                    label='Image'
+                    value={metadata.discordImage}
+                    type='image'
+                  />
+                  {metadata.discordType && (
+                    <MetadataField label='Type' value={metadata.discordType} />
+                  )}
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Slack Preview'
+                  description='How your link appears when shared on Slack'
+                  data={{
+                    title: metadata.slackTitle,
+                    description: metadata.slackDescription,
+                    image: metadata.slackImage,
+                    type: metadata.slackType,
+                  }}
+                >
+                  <MetadataField label='Title' value={metadata.slackTitle} />
+                  <MetadataField
+                    label='Description'
+                    value={metadata.slackDescription}
+                  />
+                  <MetadataField
+                    label='Image'
+                    value={metadata.slackImage}
+                    type='image'
+                  />
+                  {metadata.slackType && (
+                    <MetadataField label='Type' value={metadata.slackType} />
+                  )}
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Telegram Preview'
+                  description='How your link appears when shared on Telegram'
+                  data={{
+                    title: metadata.telegramTitle,
+                    description: metadata.telegramDescription,
+                    image: metadata.telegramImage,
+                    type: metadata.telegramType,
+                  }}
+                >
+                  <MetadataField label='Title' value={metadata.telegramTitle} />
+                  <MetadataField
+                    label='Description'
+                    value={metadata.telegramDescription}
+                  />
+                  <MetadataField
+                    label='Image'
+                    value={metadata.telegramImage}
+                    type='image'
+                  />
+                  {metadata.telegramType && (
+                    <MetadataField label='Type' value={metadata.telegramType} />
+                  )}
+                </MetadataSection>
+
+                <MetadataSection
                   title='Pinterest Preview'
                   description='How your link appears when shared on Pinterest'
                   data={{

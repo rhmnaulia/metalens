@@ -81,6 +81,24 @@ export interface MetadataResult {
   sitemapExists: boolean
   robotsTxtExists: boolean
   robotsTxtContent?: string
+
+  // Discord
+  discordTitle?: string
+  discordDescription?: string
+  discordImage?: string
+  discordType?: string
+
+  // Slack
+  slackTitle?: string
+  slackDescription?: string
+  slackImage?: string
+  slackType?: string
+
+  // Telegram
+  telegramTitle?: string
+  telegramDescription?: string
+  telegramImage?: string
+  telegramType?: string
 }
 
 export async function fetchMetadata(url: string): Promise<MetadataResult> {
@@ -247,6 +265,27 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       sitemapExists,
       robotsTxtExists,
       robotsTxtContent,
+
+      // Discord
+      discordTitle: getMeta('og:title', 'property') || getMeta('title'),
+      discordDescription:
+        getMeta('og:description', 'property') || getMeta('description'),
+      discordImage: getMeta('og:image', 'property'),
+      discordType: getMeta('og:type', 'property'),
+
+      // Slack
+      slackTitle: getMeta('og:title', 'property') || getMeta('title'),
+      slackDescription:
+        getMeta('og:description', 'property') || getMeta('description'),
+      slackImage: getMeta('og:image', 'property'),
+      slackType: getMeta('og:type', 'property'),
+
+      // Telegram
+      telegramTitle: getMeta('og:title', 'property') || getMeta('title'),
+      telegramDescription:
+        getMeta('og:description', 'property') || getMeta('description'),
+      telegramImage: getMeta('og:image', 'property'),
+      telegramType: getMeta('og:type', 'property'),
     }
   } catch (error) {
     console.error('Error fetching metadata:', error)
