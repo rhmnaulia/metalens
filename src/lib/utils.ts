@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatUrl(url: string | null) {
+export function formatUrl(url: string | undefined) {
   if (!url) return 'Not found'
   try {
     const urlObj = new URL(url)
