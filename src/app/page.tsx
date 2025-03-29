@@ -5,64 +5,16 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Globe, Search, Github, Copy, Check } from 'lucide-react'
+import { Loader2, Globe, Search, Github } from 'lucide-react'
 import { fetchMetadata, MetadataResult } from '@/lib/metadata'
 import { MetadataField } from '@/components/metadata-field'
 import { MetadataSection } from '@/components/metadata-section'
 import { MetadataGrid } from '@/components/metadata-grid'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { CopyButton } from '@/components/copy-button'
+import { formatUrl } from '@/lib/utils'
+import { GITHUB_REPO_URL } from '@/lib/constants'
 import './animations.css'
-
-const GITHUB_REPO_URL = 'https://github.com/yourusername/meta-checker' // TODO: Update with actual repo URL
-
-function CopyButton({
-  content,
-  className = '',
-}: {
-  content: string | null | undefined
-  className?: string
-}) {
-  const [copied, setCopied] = useState(false)
-
-  if (!content) return null
-
-  const copy = () => {
-    navigator.clipboard.writeText(content)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <Button
-      variant='ghost'
-      size='icon'
-      className={`h-6 w-6 hover:bg-accent hover:text-accent-foreground ${className}`}
-      onClick={copy}
-    >
-      {copied ? <Check className='h-3 w-3' /> : <Copy className='h-3 w-3' />}
-      <span className='sr-only'>Copy</span>
-    </Button>
-  )
-}
-
-function formatUrl(url: string | null) {
-  if (!url) return 'Not found'
-  try {
-    new URL(url)
-    return (
-      <a
-        href={url}
-        target='_blank'
-        rel='noopener noreferrer'
-        className='text-primary hover:underline break-all'
-      >
-        {url}
-      </a>
-    )
-  } catch {
-    return url
-  }
-}
 
 export default function Home() {
   const [url, setUrl] = useState('')
@@ -131,7 +83,12 @@ export default function Home() {
                   required
                 />
               </div>
-              <Button className='h-10 w-20' type='submit' disabled={isLoading}>
+              <Button
+                type='submit'
+                className='h-10 w-20'
+                size='lg'
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
