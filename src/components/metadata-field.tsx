@@ -38,11 +38,7 @@ export function MetadataField({
           <div className='text-sm text-muted-foreground mb-2'>
             {formatUrl(value)}
           </div>
-          <ImagePreview
-            src={value}
-            alt={`${label} Preview`}
-            title={`${label} Preview`}
-          />
+          <ImagePreview src={value} alt={`${label} Preview`} />
         </>
       )}
     </div>
