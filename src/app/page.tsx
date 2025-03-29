@@ -124,10 +124,12 @@ export default function Home() {
           {metadata && (
             <div className='animate-fade-in'>
               <Tabs defaultValue='basic' className='w-full'>
-                <TabsList className='grid w-full grid-cols-3 mb-6'>
+                <TabsList className='grid w-full grid-cols-5 mb-6'>
                   <TabsTrigger value='basic'>Basic</TabsTrigger>
                   <TabsTrigger value='social'>Social</TabsTrigger>
+                  <TabsTrigger value='article'>Article</TabsTrigger>
                   <TabsTrigger value='technical'>Technical</TabsTrigger>
+                  <TabsTrigger value='additional'>Additional</TabsTrigger>
                 </TabsList>
                 <div className='mt-4 space-y-4'>
                   <TabsContent value='basic'>
@@ -158,32 +160,72 @@ export default function Home() {
                               </p>
                             </div>
                           </div>
-                          <div className='space-y-2'>
-                            <h3 className='font-medium text-primary'>
-                              Keywords
-                            </h3>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.keywords || 'Not found'}
-                            </p>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Keywords
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.keywords || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Author
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.author || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Generator
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.generator || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Theme Color
+                              </h3>
+                              <div className='flex items-center gap-2'>
+                                {metadata.themeColor && (
+                                  <div
+                                    className='w-4 h-4 rounded border'
+                                    style={{
+                                      backgroundColor: metadata.themeColor,
+                                    }}
+                                  />
+                                )}
+                                <p className='text-sm text-muted-foreground'>
+                                  {metadata.themeColor || 'Not found'}
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
                     </div>
                   </TabsContent>
+
                   <TabsContent value='social'>
-                    <div className='animate-stagger'>
+                    <div className='animate-stagger space-y-4'>
                       <Card className='card-hover'>
                         <CardHeader>
-                          <CardTitle>Social Media</CardTitle>
+                          <CardTitle>Open Graph</CardTitle>
                           <CardDescription>
-                            Open Graph and Twitter card information
+                            Social media sharing information using Open Graph
+                            protocol
                           </CardDescription>
                         </CardHeader>
                         <CardContent className='space-y-8'>
                           <div className='grid gap-6 md:grid-cols-2'>
                             <div className='space-y-2'>
                               <h3 className='font-medium text-primary'>
-                                Open Graph Title
+                                OG Title
                               </h3>
                               <p className='text-sm text-muted-foreground break-words'>
                                 {metadata.ogTitle || 'Not found'}
@@ -191,16 +233,52 @@ export default function Home() {
                             </div>
                             <div className='space-y-2'>
                               <h3 className='font-medium text-primary'>
-                                Open Graph Description
+                                OG Description
                               </h3>
                               <p className='text-sm text-muted-foreground break-words'>
                                 {metadata.ogDescription || 'Not found'}
                               </p>
                             </div>
                           </div>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                OG Type
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.ogType || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                OG Site Name
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.ogSiteName || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                OG URL
+                              </h3>
+                              <div className='text-sm text-muted-foreground'>
+                                {formatUrl(metadata.ogUrl)}
+                              </div>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                OG Locale
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.ogLocale || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
                           <div className='space-y-2'>
                             <h3 className='font-medium text-primary'>
-                              Open Graph Image
+                              OG Image
                             </h3>
                             <div className='text-sm text-muted-foreground mb-2'>
                               {formatUrl(metadata.ogImage)}
@@ -211,10 +289,41 @@ export default function Home() {
                               title='Open Graph Image Preview'
                             />
                           </div>
+                          {metadata.ogVideo && (
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                OG Video
+                              </h3>
+                              <div className='text-sm text-muted-foreground'>
+                                {formatUrl(metadata.ogVideo)}
+                              </div>
+                            </div>
+                          )}
+                          {metadata.ogAudio && (
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                OG Audio
+                              </h3>
+                              <div className='text-sm text-muted-foreground'>
+                                {formatUrl(metadata.ogAudio)}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>Twitter Card</CardTitle>
+                          <CardDescription>
+                            Twitter-specific social media information
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-8'>
                           <div className='grid gap-6 md:grid-cols-2'>
                             <div className='space-y-2'>
                               <h3 className='font-medium text-primary'>
-                                Twitter Card
+                                Card Type
                               </h3>
                               <p className='text-sm text-muted-foreground break-words'>
                                 {metadata.twitterCard || 'Not found'}
@@ -222,7 +331,7 @@ export default function Home() {
                             </div>
                             <div className='space-y-2'>
                               <h3 className='font-medium text-primary'>
-                                Twitter Title
+                                Title
                               </h3>
                               <p className='text-sm text-muted-foreground break-words'>
                                 {metadata.twitterTitle || 'Not found'}
@@ -231,16 +340,32 @@ export default function Home() {
                           </div>
                           <div className='space-y-2'>
                             <h3 className='font-medium text-primary'>
-                              Twitter Description
+                              Description
                             </h3>
                             <p className='text-sm text-muted-foreground break-words'>
                               {metadata.twitterDescription || 'Not found'}
                             </p>
                           </div>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Site (@username)
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.twitterSite || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Creator (@username)
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.twitterCreator || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
                           <div className='space-y-2'>
-                            <h3 className='font-medium text-primary'>
-                              Twitter Image
-                            </h3>
+                            <h3 className='font-medium text-primary'>Image</h3>
                             <div className='text-sm text-muted-foreground mb-2'>
                               {formatUrl(metadata.twitterImage)}
                             </div>
@@ -254,6 +379,65 @@ export default function Home() {
                       </Card>
                     </div>
                   </TabsContent>
+
+                  <TabsContent value='article'>
+                    <div className='animate-stagger'>
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>Article Information</CardTitle>
+                          <CardDescription>
+                            Article-specific metadata for better content
+                            organization
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Published Time
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.articlePublishedTime || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Modified Time
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.articleModifiedTime || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Author
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.articleAuthor || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Section
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.articleSection || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Tags</h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.articleTags || 'Not found'}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </TabsContent>
+
                   <TabsContent value='technical'>
                     <div className='animate-stagger'>
                       <Card className='card-hover'>
@@ -312,12 +496,102 @@ export default function Home() {
                               </div>
                               <div className='space-y-2'>
                                 <h3 className='font-medium text-primary'>
+                                  Manifest
+                                </h3>
+                                <div className='text-sm text-muted-foreground'>
+                                  {formatUrl(metadata.manifest)}
+                                </div>
+                              </div>
+                            </div>
+                            <div className='grid gap-6 md:grid-cols-2'>
+                              <div className='space-y-2'>
+                                <h3 className='font-medium text-primary'>
                                   Favicon
                                 </h3>
                                 <div className='text-sm text-muted-foreground'>
                                   {formatUrl(metadata.favicon)}
                                 </div>
                               </div>
+                              <div className='space-y-2'>
+                                <h3 className='font-medium text-primary'>
+                                  Apple Touch Icon
+                                </h3>
+                                <div className='text-sm text-muted-foreground'>
+                                  {formatUrl(metadata.appleTouchIcon)}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value='additional'>
+                    <div className='animate-stagger'>
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>Additional Information</CardTitle>
+                          <CardDescription>
+                            Extra metadata and SEO-related information
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          {metadata.alternateUrls && (
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Alternate URLs
+                              </h3>
+                              <div className='space-y-2'>
+                                {Object.entries(metadata.alternateUrls).map(
+                                  ([lang, url]) => (
+                                    <div key={lang} className='flex gap-2'>
+                                      <span className='text-sm font-medium'>
+                                        {lang}:
+                                      </span>
+                                      <div className='text-sm text-muted-foreground'>
+                                        {formatUrl(url)}
+                                      </div>
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Previous Page
+                              </h3>
+                              <div className='text-sm text-muted-foreground'>
+                                {formatUrl(metadata.prevPage)}
+                              </div>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Next Page
+                              </h3>
+                              <div className='text-sm text-muted-foreground'>
+                                {formatUrl(metadata.nextPage)}
+                              </div>
+                            </div>
+                          </div>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Rating
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.rating || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Referrer Policy
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.referrer || 'Not found'}
+                              </p>
                             </div>
                           </div>
                         </CardContent>
