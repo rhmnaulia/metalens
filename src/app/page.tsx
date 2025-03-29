@@ -4,9 +4,7 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Globe, Search, Github } from 'lucide-react'
-import { fetchMetadata, MetadataResult } from '@/lib/metadata'
+import { Loader2, Search, Github, CheckCircle2, XCircle } from 'lucide-react'
 import { MetadataField } from '@/components/metadata-field'
 import { MetadataSection } from '@/components/metadata-section'
 import { MetadataGrid } from '@/components/metadata-grid'
@@ -14,28 +12,22 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { CopyButton } from '@/components/copy-button'
 import { formatUrl } from '@/lib/utils'
 import { GITHUB_REPO_URL } from '@/lib/constants'
+import { useMetadata } from '@/hooks/use-metadata'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import './animations.css'
 
 export default function Home() {
   const [url, setUrl] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [metadata, setMetadata] = useState<MetadataResult | null>(null)
+  const { checkMetadata, metadata, errorMessage, isPending } = useMetadata()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    setError(null)
-    setMetadata(null)
-
-    try {
-      const result = await fetchMetadata(url)
-      setMetadata(result)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch metadata')
-    } finally {
-      setIsLoading(false)
-    }
+    checkMetadata(url)
   }
 
   return (
@@ -55,9 +47,6 @@ export default function Home() {
       <div className='container mx-auto py-16 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-4xl mx-auto space-y-8 animate-fade-in'>
           <div className='text-center space-y-4'>
-            <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 ring-1 ring-primary/20'>
-              <Globe className='w-8 h-8 text-primary' />
-            </div>
             <h1 className='text-3xl sm:text-4xl font-bold tracking-tight lg:text-5xl bg-gradient-to-r from-indigo-600 via-primary to-indigo-400 bg-clip-text text-transparent animate-fade-in'>
               Meta
               <span className='text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600'>
@@ -77,19 +66,41 @@ export default function Home() {
                 <Input
                   type='url'
                   placeholder='Enter website URL (e.g., https://example.com)'
-                  className='pl-9 h-10'
+                  className='pl-9 pr-9 h-10'
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   required
                 />
+                <TooltipProvider>
+                  {errorMessage && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <XCircle className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-destructive animate-fade-in' />
+                      </TooltipTrigger>
+                      <TooltipContent className='bg-destructive text-destructive-foreground'>
+                        <p>{errorMessage}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                  {metadata && !errorMessage && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-500 animate-fade-in' />
+                      </TooltipTrigger>
+                      <TooltipContent className='bg-green-500 text-white'>
+                        <p>Successfully retrieved metadata!</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </TooltipProvider>
               </div>
               <Button
                 type='submit'
                 className='h-10 w-20'
                 size='lg'
-                disabled={isLoading}
+                disabled={isPending}
               >
-                {isLoading ? (
+                {isPending ? (
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                 ) : (
                   'Check'
@@ -97,12 +108,6 @@ export default function Home() {
               </Button>
             </div>
           </form>
-
-          {error && (
-            <Alert variant='destructive'>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
 
           {metadata && (
             <Tabs defaultValue='basic' className='animate-fade-in'>
