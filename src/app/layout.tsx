@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Meta Checker - SEO Metadata Analysis Tool',
+  title: 'MetaScope - Instant SEO & Social Media Preview Tool',
   description:
-    "Check and analyze your website's metadata and SEO information with our easy-to-use tool.",
+    "Analyze and preview your website's SEO metadata, social cards, and technical tags in real-time. Get instant insights for better visibility.",
 }
 
 export default function RootLayout({

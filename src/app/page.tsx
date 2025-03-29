@@ -71,12 +71,12 @@ export default function Home() {
             <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 ring-1 ring-primary/20'>
               <Globe className='w-8 h-8 text-primary' />
             </div>
-            <h1 className='text-3xl sm:text-4xl font-bold tracking-tight  lg:text-5xl'>
-              Meta Checker
+            <h1 className='text-3xl sm:text-4xl font-bold tracking-tight lg:text-5xl bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent'>
+              MetaScope
             </h1>
             <p className='text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto'>
-              Check your website&apos;s metadata and SEO information with our
-              easy-to-use tool
+              Instantly analyze and preview your website&apos;s SEO metadata,
+              social cards, and technical tags for better visibility
             </p>
           </div>
 
