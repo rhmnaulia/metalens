@@ -31,15 +31,17 @@ export function MetadataField({
         </p>
       )}
       {type === 'url' && (
-        <div className='text-sm text-muted-foreground'>{formatUrl(value)}</div>
+        <div className='text-sm text-muted-foreground'>
+          {formatUrl(value || null)}
+        </div>
       )}
       {type === 'image' && (
         <>
           <div className='text-sm text-muted-foreground mb-2'>
-            {formatUrl(value)}
+            {formatUrl(value || null)}
           </div>
           <ImagePreview
-            src={value}
+            src={value || null}
             alt={`${label} Preview`}
             title={`${label} Preview`}
           />
