@@ -44,10 +44,10 @@ export default function Home() {
         <ThemeToggle />
       </nav>
 
-      <div className='container mx-auto py-16 px-4 sm:px-6 lg:px-8'>
+      <div className='container mx-auto py-16 px-6 sm:px-6 lg:px-8'>
         <div className='max-w-4xl mx-auto space-y-8 animate-fade-in'>
           <div className='text-center space-y-4'>
-            <h1 className='text-3xl sm:text-4xl font-bold tracking-tight lg:text-5xl bg-gradient-to-r from-indigo-600 via-primary to-indigo-400 bg-clip-text text-transparent animate-fade-in'>
+            <h1 className='text-4xl font-bold tracking-tight lg:text-5xl bg-gradient-to-r from-indigo-600 via-primary to-indigo-400 bg-clip-text text-transparent animate-fade-in'>
               Meta
               <span className='text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600'>
                 Lens

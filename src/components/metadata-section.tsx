@@ -25,11 +25,13 @@ export function MetadataSection({
   return (
     <Card className='card-hover'>
       <CardHeader>
-        <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+        <div className='flex items-start justify-between'>
+          <div>
+            <CardTitle>{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
+          </div>
+          <CopyAllButton data={data} title={title} />
         </div>
-        <CopyAllButton data={data} title={title} />
       </CardHeader>
       <CardContent className='space-y-6'>{children}</CardContent>
     </Card>
