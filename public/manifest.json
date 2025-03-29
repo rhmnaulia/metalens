@@ -1,0 +1,22 @@
+{
+  "name": "MetaLens - SEO & Social Media Preview Tool",
+  "short_name": "MetaLens",
+  "description": "Analyze and preview your website's SEO metadata, social cards, and technical tags in real-time.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "author": "Aulia Rahman",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
