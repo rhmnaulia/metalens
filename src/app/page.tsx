@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
 import { fetchMetadata, MetadataResult } from '@/lib/metadata'
+import { ImagePreview } from '@/components/image-preview'
 
 export default function Home() {
   const [url, setUrl] = useState('')
@@ -122,48 +123,56 @@ export default function Home() {
                     Open Graph and Twitter card information
                   </CardDescription>
                 </CardHeader>
-                <CardContent className='space-y-4'>
-                  <div>
-                    <h3 className='font-medium'>Open Graph Title</h3>
-                    <p className='text-sm text-muted-foreground'>
-                      {metadata.ogTitle || 'Not found'}
-                    </p>
+                <CardContent className='space-y-6'>
+                  <div className='grid gap-4 md:grid-cols-2'>
+                    <div className='space-y-4'>
+                      <h3 className='font-medium'>Open Graph Title</h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {metadata.ogTitle || 'Not found'}
+                      </p>
+                    </div>
+                    <div className='space-y-4'>
+                      <h3 className='font-medium'>Open Graph Description</h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {metadata.ogDescription || 'Not found'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className='font-medium'>Open Graph Description</h3>
-                    <p className='text-sm text-muted-foreground'>
-                      {metadata.ogDescription || 'Not found'}
-                    </p>
-                  </div>
-                  <div>
+                  <div className='space-y-4'>
                     <h3 className='font-medium'>Open Graph Image</h3>
-                    <p className='text-sm text-muted-foreground'>
-                      {metadata.ogImage || 'Not found'}
-                    </p>
+                    <ImagePreview
+                      src={metadata.ogImage}
+                      alt='Open Graph Image'
+                      title='Open Graph Image Preview'
+                    />
                   </div>
-                  <div>
-                    <h3 className='font-medium'>Twitter Card</h3>
-                    <p className='text-sm text-muted-foreground'>
-                      {metadata.twitterCard || 'Not found'}
-                    </p>
+                  <div className='grid gap-4 md:grid-cols-2'>
+                    <div className='space-y-4'>
+                      <h3 className='font-medium'>Twitter Card</h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {metadata.twitterCard || 'Not found'}
+                      </p>
+                    </div>
+                    <div className='space-y-4'>
+                      <h3 className='font-medium'>Twitter Title</h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {metadata.twitterTitle || 'Not found'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className='font-medium'>Twitter Title</h3>
-                    <p className='text-sm text-muted-foreground'>
-                      {metadata.twitterTitle || 'Not found'}
-                    </p>
-                  </div>
-                  <div>
+                  <div className='space-y-4'>
                     <h3 className='font-medium'>Twitter Description</h3>
                     <p className='text-sm text-muted-foreground'>
                       {metadata.twitterDescription || 'Not found'}
                     </p>
                   </div>
-                  <div>
+                  <div className='space-y-4'>
                     <h3 className='font-medium'>Twitter Image</h3>
-                    <p className='text-sm text-muted-foreground'>
-                      {metadata.twitterImage || 'Not found'}
-                    </p>
+                    <ImagePreview
+                      src={metadata.twitterImage}
+                      alt='Twitter Card Image'
+                      title='Twitter Card Image Preview'
+                    />
                   </div>
                 </CardContent>
               </Card>
