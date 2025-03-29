@@ -36,22 +36,6 @@ export interface MetadataResult {
   twitterCreator?: string
   twitterDomainVerification?: string
 
-  // WhatsApp
-  whatsappTitle?: string
-  whatsappDescription?: string
-  whatsappImage?: string
-
-  // LinkedIn
-  linkedinTitle?: string
-  linkedinDescription?: string
-  linkedinImage?: string
-  linkedinAuthor?: string
-
-  // Pinterest
-  pinterestDescription?: string
-  pinterestImage?: string
-  pinterestDomainVerification?: string
-
   // Technical
   canonicalUrl?: string
   robots?: string
@@ -93,12 +77,6 @@ export interface MetadataResult {
   slackDescription?: string
   slackImage?: string
   slackType?: string
-
-  // Telegram
-  telegramTitle?: string
-  telegramDescription?: string
-  telegramImage?: string
-  telegramType?: string
 }
 
 export async function fetchMetadata(url: string): Promise<MetadataResult> {
@@ -214,25 +192,6 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       twitterCreator: getMeta('twitter:creator'),
       twitterDomainVerification: getMeta('twitter:domain-verification'),
 
-      // WhatsApp
-      whatsappTitle: getMeta('og:title', 'property') || getMeta('title'),
-      whatsappDescription:
-        getMeta('og:description', 'property') || getMeta('description'),
-      whatsappImage: getMeta('og:image', 'property'),
-
-      // LinkedIn
-      linkedinTitle: getMeta('og:title', 'property') || getMeta('title'),
-      linkedinDescription:
-        getMeta('og:description', 'property') || getMeta('description'),
-      linkedinImage: getMeta('og:image', 'property'),
-      linkedinAuthor: getMeta('article:author', 'property'),
-
-      // Pinterest
-      pinterestDescription:
-        getMeta('og:description', 'property') || getMeta('description'),
-      pinterestImage: getMeta('og:image', 'property'),
-      pinterestDomainVerification: getMeta('p:domain_verify'),
-
       // Technical
       canonicalUrl: getLink('canonical'),
       robots: getMeta('robots'),
@@ -279,13 +238,6 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
         getMeta('og:description', 'property') || getMeta('description'),
       slackImage: getMeta('og:image', 'property'),
       slackType: getMeta('og:type', 'property'),
-
-      // Telegram
-      telegramTitle: getMeta('og:title', 'property') || getMeta('title'),
-      telegramDescription:
-        getMeta('og:description', 'property') || getMeta('description'),
-      telegramImage: getMeta('og:image', 'property'),
-      telegramType: getMeta('og:type', 'property'),
     }
   } catch (error) {
     console.error('Error fetching metadata:', error)

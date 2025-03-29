@@ -25,8 +25,8 @@ export function MetadataSection({
   return (
     <Card className='card-hover'>
       <CardHeader>
-        <div className='flex items-start justify-between'>
-          <div>
+        <div className='flex items-start justify-between gap-4'>
+          <div className='min-w-0 space-y-1'>
             <CardTitle>{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>

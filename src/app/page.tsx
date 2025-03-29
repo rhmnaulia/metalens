@@ -336,53 +336,6 @@ export default function Home() {
                 </MetadataSection>
 
                 <MetadataSection
-                  title='WhatsApp Preview'
-                  description='How your link appears when shared on WhatsApp'
-                  data={{
-                    title: metadata.whatsappTitle,
-                    description: metadata.whatsappDescription,
-                    image: metadata.whatsappImage,
-                  }}
-                >
-                  <MetadataField label='Title' value={metadata.whatsappTitle} />
-                  <MetadataField
-                    label='Description'
-                    value={metadata.whatsappDescription}
-                  />
-                  <MetadataField
-                    label='Image'
-                    value={metadata.whatsappImage}
-                    type='image'
-                  />
-                </MetadataSection>
-
-                <MetadataSection
-                  title='LinkedIn Preview'
-                  description='How your link appears when shared on LinkedIn'
-                  data={{
-                    title: metadata.linkedinTitle,
-                    description: metadata.linkedinDescription,
-                    author: metadata.linkedinAuthor,
-                    image: metadata.linkedinImage,
-                  }}
-                >
-                  <MetadataField label='Title' value={metadata.linkedinTitle} />
-                  <MetadataField
-                    label='Description'
-                    value={metadata.linkedinDescription}
-                  />
-                  <MetadataField
-                    label='Author'
-                    value={metadata.linkedinAuthor}
-                  />
-                  <MetadataField
-                    label='Image'
-                    value={metadata.linkedinImage}
-                    type='image'
-                  />
-                </MetadataSection>
-
-                <MetadataSection
                   title='Discord Preview'
                   description='How your link appears when shared on Discord'
                   data={{
@@ -429,57 +382,6 @@ export default function Home() {
                   />
                   {metadata.slackType && (
                     <MetadataField label='Type' value={metadata.slackType} />
-                  )}
-                </MetadataSection>
-
-                <MetadataSection
-                  title='Telegram Preview'
-                  description='How your link appears when shared on Telegram'
-                  data={{
-                    title: metadata.telegramTitle,
-                    description: metadata.telegramDescription,
-                    image: metadata.telegramImage,
-                    type: metadata.telegramType,
-                  }}
-                >
-                  <MetadataField label='Title' value={metadata.telegramTitle} />
-                  <MetadataField
-                    label='Description'
-                    value={metadata.telegramDescription}
-                  />
-                  <MetadataField
-                    label='Image'
-                    value={metadata.telegramImage}
-                    type='image'
-                  />
-                  {metadata.telegramType && (
-                    <MetadataField label='Type' value={metadata.telegramType} />
-                  )}
-                </MetadataSection>
-
-                <MetadataSection
-                  title='Pinterest Preview'
-                  description='How your link appears when shared on Pinterest'
-                  data={{
-                    description: metadata.pinterestDescription,
-                    image: metadata.pinterestImage,
-                    domainVerification: metadata.pinterestDomainVerification,
-                  }}
-                >
-                  <MetadataField
-                    label='Description'
-                    value={metadata.pinterestDescription}
-                  />
-                  <MetadataField
-                    label='Image'
-                    value={metadata.pinterestImage}
-                    type='image'
-                  />
-                  {metadata.pinterestDomainVerification && (
-                    <MetadataField
-                      label='Domain Verification'
-                      value={metadata.pinterestDomainVerification}
-                    />
                   )}
                 </MetadataSection>
               </TabsContent>
