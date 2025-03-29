@@ -283,6 +283,18 @@ export default function Home() {
                             <div className='text-sm text-muted-foreground mb-2'>
                               {formatUrl(metadata.ogImage)}
                             </div>
+                            {metadata.ogImageWidth &&
+                              metadata.ogImageHeight && (
+                                <p className='text-sm text-muted-foreground mb-2'>
+                                  Dimensions: {metadata.ogImageWidth} x{' '}
+                                  {metadata.ogImageHeight}
+                                </p>
+                              )}
+                            {metadata.ogImageAlt && (
+                              <p className='text-sm text-muted-foreground mb-2'>
+                                Alt text: {metadata.ogImageAlt}
+                              </p>
+                            )}
                             <ImagePreview
                               src={metadata.ogImage}
                               alt='Open Graph Image'
@@ -309,6 +321,43 @@ export default function Home() {
                               </div>
                             </div>
                           )}
+                        </CardContent>
+                      </Card>
+
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>Facebook</CardTitle>
+                          <CardDescription>
+                            Facebook-specific metadata and verification
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                App ID
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.fbAppId || 'Not found'}
+                              </p>
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Pages
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.fbPages || 'Not found'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>
+                              Domain Verification
+                            </h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.fbDomainVerification || 'Not found'}
+                            </p>
+                          </div>
                         </CardContent>
                       </Card>
 
@@ -369,12 +418,136 @@ export default function Home() {
                             <div className='text-sm text-muted-foreground mb-2'>
                               {formatUrl(metadata.twitterImage)}
                             </div>
+                            {metadata.twitterImageAlt && (
+                              <p className='text-sm text-muted-foreground mb-2'>
+                                Alt text: {metadata.twitterImageAlt}
+                              </p>
+                            )}
                             <ImagePreview
                               src={metadata.twitterImage}
                               alt='Twitter Card Image'
                               title='Twitter Card Image Preview'
                             />
                           </div>
+                          {metadata.twitterDomainVerification && (
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Domain Verification
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.twitterDomainVerification}
+                              </p>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>WhatsApp Preview</CardTitle>
+                          <CardDescription>
+                            How your link appears when shared on WhatsApp
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Title</h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.whatsappTitle || 'Not found'}
+                            </p>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>
+                              Description
+                            </h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.whatsappDescription || 'Not found'}
+                            </p>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Image</h3>
+                            <ImagePreview
+                              src={metadata.whatsappImage}
+                              alt='WhatsApp Preview Image'
+                              title='WhatsApp Preview Image'
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>LinkedIn Preview</CardTitle>
+                          <CardDescription>
+                            How your link appears when shared on LinkedIn
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Title</h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.linkedinTitle || 'Not found'}
+                            </p>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>
+                              Description
+                            </h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.linkedinDescription || 'Not found'}
+                            </p>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Author</h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.linkedinAuthor || 'Not found'}
+                            </p>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Image</h3>
+                            <ImagePreview
+                              src={metadata.linkedinImage}
+                              alt='LinkedIn Preview Image'
+                              title='LinkedIn Preview Image'
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className='card-hover'>
+                        <CardHeader>
+                          <CardTitle>Pinterest Preview</CardTitle>
+                          <CardDescription>
+                            How your link appears when shared on Pinterest
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>
+                              Description
+                            </h3>
+                            <p className='text-sm text-muted-foreground break-words'>
+                              {metadata.pinterestDescription || 'Not found'}
+                            </p>
+                          </div>
+                          <div className='space-y-2'>
+                            <h3 className='font-medium text-primary'>Image</h3>
+                            <ImagePreview
+                              src={metadata.pinterestImage}
+                              alt='Pinterest Preview Image'
+                              title='Pinterest Preview Image'
+                            />
+                          </div>
+                          {metadata.pinterestDomainVerification && (
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Domain Verification
+                              </h3>
+                              <p className='text-sm text-muted-foreground break-words'>
+                                {metadata.pinterestDomainVerification}
+                              </p>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     </div>

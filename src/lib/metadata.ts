@@ -11,6 +11,9 @@ export interface MetadataResult {
   ogTitle: string | null
   ogDescription: string | null
   ogImage: string | null
+  ogImageWidth: string | null
+  ogImageHeight: string | null
+  ogImageAlt: string | null
   ogUrl: string | null
   ogType: string | null
   ogSiteName: string | null
@@ -18,13 +21,36 @@ export interface MetadataResult {
   ogVideo: string | null
   ogAudio: string | null
 
+  // Facebook
+  fbAppId: string | null
+  fbPages: string | null
+  fbDomainVerification: string | null
+
   // Twitter Cards
   twitterCard: string | null
   twitterTitle: string | null
   twitterDescription: string | null
   twitterImage: string | null
+  twitterImageAlt: string | null
   twitterSite: string | null
   twitterCreator: string | null
+  twitterDomainVerification: string | null
+
+  // WhatsApp
+  whatsappTitle: string | null
+  whatsappDescription: string | null
+  whatsappImage: string | null
+
+  // LinkedIn
+  linkedinTitle: string | null
+  linkedinDescription: string | null
+  linkedinImage: string | null
+  linkedinAuthor: string | null
+
+  // Pinterest
+  pinterestDescription: string | null
+  pinterestImage: string | null
+  pinterestDomainVerification: string | null
 
   // Technical
   canonicalUrl: string | null
@@ -145,6 +171,9 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       ogTitle: getMeta('og:title', 'property'),
       ogDescription: getMeta('og:description', 'property'),
       ogImage: getMeta('og:image', 'property'),
+      ogImageWidth: getMeta('og:image:width', 'property'),
+      ogImageHeight: getMeta('og:image:height', 'property'),
+      ogImageAlt: getMeta('og:image:alt', 'property'),
       ogUrl: getMeta('og:url', 'property'),
       ogType: getMeta('og:type', 'property'),
       ogSiteName: getMeta('og:site_name', 'property'),
@@ -152,13 +181,39 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       ogVideo: getMeta('og:video', 'property'),
       ogAudio: getMeta('og:audio', 'property'),
 
+      // Facebook
+      fbAppId: getMeta('fb:app_id', 'property'),
+      fbPages: getMeta('fb:pages', 'property'),
+      fbDomainVerification: getMeta('facebook-domain-verification'),
+
       // Twitter Cards
       twitterCard: getMeta('twitter:card'),
       twitterTitle: getMeta('twitter:title'),
       twitterDescription: getMeta('twitter:description'),
       twitterImage: getMeta('twitter:image'),
+      twitterImageAlt: getMeta('twitter:image:alt'),
       twitterSite: getMeta('twitter:site'),
       twitterCreator: getMeta('twitter:creator'),
+      twitterDomainVerification: getMeta('twitter:domain-verification'),
+
+      // WhatsApp
+      whatsappTitle: getMeta('og:title', 'property') || getMeta('title'),
+      whatsappDescription:
+        getMeta('og:description', 'property') || getMeta('description'),
+      whatsappImage: getMeta('og:image', 'property'),
+
+      // LinkedIn
+      linkedinTitle: getMeta('og:title', 'property') || getMeta('title'),
+      linkedinDescription:
+        getMeta('og:description', 'property') || getMeta('description'),
+      linkedinImage: getMeta('og:image', 'property'),
+      linkedinAuthor: getMeta('article:author', 'property'),
+
+      // Pinterest
+      pinterestDescription:
+        getMeta('og:description', 'property') || getMeta('description'),
+      pinterestImage: getMeta('og:image', 'property'),
+      pinterestDomainVerification: getMeta('p:domain_verify'),
 
       // Technical
       canonicalUrl: getLink('canonical'),
