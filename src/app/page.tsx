@@ -524,6 +524,72 @@ export default function Home() {
                           </div>
                         </CardContent>
                       </Card>
+
+                      <Card className='card-hover mt-4'>
+                        <CardHeader>
+                          <CardTitle>Sitemap & Robots.txt</CardTitle>
+                          <CardDescription>
+                            Search engine crawling configuration
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                          <div className='grid gap-6 md:grid-cols-2'>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Sitemap Status
+                              </h3>
+                              <div className='flex items-center gap-2'>
+                                <div
+                                  className={`w-2 h-2 rounded-full ${
+                                    metadata.sitemapExists
+                                      ? 'bg-green-500'
+                                      : 'bg-red-500'
+                                  }`}
+                                />
+                                <p className='text-sm text-muted-foreground'>
+                                  {metadata.sitemapExists
+                                    ? 'Sitemap found'
+                                    : 'No sitemap detected'}
+                                </p>
+                              </div>
+                              {metadata.sitemapUrl && (
+                                <div className='text-sm text-muted-foreground mt-2'>
+                                  {formatUrl(metadata.sitemapUrl)}
+                                </div>
+                              )}
+                            </div>
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Robots.txt Status
+                              </h3>
+                              <div className='flex items-center gap-2'>
+                                <div
+                                  className={`w-2 h-2 rounded-full ${
+                                    metadata.robotsTxtExists
+                                      ? 'bg-green-500'
+                                      : 'bg-red-500'
+                                  }`}
+                                />
+                                <p className='text-sm text-muted-foreground'>
+                                  {metadata.robotsTxtExists
+                                    ? 'robots.txt found'
+                                    : 'No robots.txt detected'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          {metadata.robotsTxtContent && (
+                            <div className='space-y-2'>
+                              <h3 className='font-medium text-primary'>
+                                Robots.txt Content
+                              </h3>
+                              <pre className='text-sm text-muted-foreground bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap'>
+                                {metadata.robotsTxtContent}
+                              </pre>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
                     </div>
                   </TabsContent>
 

@@ -49,6 +49,12 @@ export interface MetadataResult {
   nextPage: string | null
   rating: string | null
   referrer: string | null
+
+  // Sitemap
+  sitemapUrl: string | null
+  sitemapExists: boolean
+  robotsTxtExists: boolean
+  robotsTxtContent: string | null
 }
 
 export async function fetchMetadata(url: string): Promise<MetadataResult> {
@@ -77,6 +83,54 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
         alternateUrls[hreflang] = href
       }
     })
+
+    // Check for sitemap and robots.txt
+    const baseUrl = new URL(url).origin
+    let sitemapUrl = null
+    let sitemapExists = false
+    let robotsTxtExists = false
+    let robotsTxtContent = null
+
+    // Check robots.txt
+    try {
+      const robotsResponse = await fetch(`${baseUrl}/robots.txt`)
+      if (robotsResponse.ok) {
+        robotsTxtExists = true
+        robotsTxtContent = await robotsResponse.text()
+
+        // Try to find sitemap in robots.txt
+        const sitemapMatch = robotsTxtContent.match(/Sitemap:\s*(.+)/i)
+        if (sitemapMatch) {
+          sitemapUrl = sitemapMatch[1].trim()
+          sitemapExists = true
+        }
+      }
+    } catch (error) {
+      console.error('Error checking robots.txt:', error)
+    }
+
+    // If sitemap not found in robots.txt, check common locations
+    if (!sitemapExists) {
+      const commonSitemapPaths = [
+        '/sitemap.xml',
+        '/sitemap_index.xml',
+        '/sitemap/',
+        '/sitemap/sitemap.xml',
+      ]
+
+      for (const path of commonSitemapPaths) {
+        try {
+          const sitemapResponse = await fetch(`${baseUrl}${path}`)
+          if (sitemapResponse.ok) {
+            sitemapUrl = `${baseUrl}${path}`
+            sitemapExists = true
+            break
+          }
+        } catch (error) {
+          console.error(`Error checking sitemap at ${path}:`, error)
+        }
+      }
+    }
 
     return {
       // Basic SEO
@@ -131,6 +185,12 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       nextPage: getLink('next'),
       rating: getMeta('rating'),
       referrer: getMeta('referrer'),
+
+      // Sitemap
+      sitemapUrl,
+      sitemapExists,
+      robotsTxtExists,
+      robotsTxtContent,
     }
   } catch (error) {
     console.error('Error fetching metadata:', error)
