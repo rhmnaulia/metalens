@@ -3,41 +3,17 @@
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Globe, Search, Github, Copy, Check } from 'lucide-react'
 import { fetchMetadata, MetadataResult } from '@/lib/metadata'
-import { ImagePreview } from '@/components/image-preview'
+import { MetadataField } from '@/components/metadata-field'
+import { MetadataSection } from '@/components/metadata-section'
+import { MetadataGrid } from '@/components/metadata-grid'
 import { ThemeToggle } from '@/components/theme-toggle'
 import './animations.css'
 
-const GITHUB_REPO_URL = '' // TODO: Update with actual repo URL
-
-function formatUrl(url: string | null) {
-  if (!url) return 'Not found'
-  try {
-    new URL(url)
-    return (
-      <a
-        href={url}
-        target='_blank'
-        rel='noopener noreferrer'
-        className='text-primary hover:underline break-all'
-      >
-        {url}
-      </a>
-    )
-  } catch {
-    return url
-  }
-}
+const GITHUB_REPO_URL = 'https://github.com/yourusername/meta-checker' // TODO: Update with actual repo URL
 
 function CopyButton({
   content,
@@ -69,71 +45,44 @@ function CopyButton({
   )
 }
 
-function CopyAllButton({
-  data,
-  title,
-}: {
-  data: Record<string, string | null | undefined>
-  title: string
-}) {
-  const [copied, setCopied] = useState(false)
-
-  const nonEmptyEntries = Object.entries(data).filter(([, value]) => value)
-  if (nonEmptyEntries.length === 0) return null
-
-  const copy = () => {
-    const jsonData = {
-      title,
-      data: Object.fromEntries(nonEmptyEntries),
-    }
-
-    navigator.clipboard.writeText(JSON.stringify(jsonData, null, 2))
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+function formatUrl(url: string | null) {
+  if (!url) return 'Not found'
+  try {
+    new URL(url)
+    return (
+      <a
+        href={url}
+        target='_blank'
+        rel='noopener noreferrer'
+        className='text-primary hover:underline break-all'
+      >
+        {url}
+      </a>
+    )
+  } catch {
+    return url
   }
-
-  return (
-    <Button
-      variant='outline'
-      size='sm'
-      className='ml-auto flex items-center gap-2'
-      onClick={copy}
-    >
-      {copied ? (
-        <>
-          <Check className='h-3 w-3' />
-          Copied!
-        </>
-      ) : (
-        <>
-          <Copy className='h-3 w-3' />
-          Copy JSON
-        </>
-      )}
-    </Button>
-  )
 }
 
 export default function Home() {
   const [url, setUrl] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [metadata, setMetadata] = useState<MetadataResult | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setIsLoading(true)
     setError(null)
     setMetadata(null)
 
     try {
       const result = await fetchMetadata(url)
       setMetadata(result)
-    } catch (error) {
-      console.error('Error:', error)
-      setError('Failed to fetch metadata. Please check the URL and try again.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch metadata')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -153,12 +102,15 @@ export default function Home() {
 
       <div className='container mx-auto py-16 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-4xl mx-auto space-y-8 animate-fade-in'>
-          <div className='text-center space-y-4 animate-slide-in'>
+          <div className='text-center space-y-4'>
             <div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 ring-1 ring-primary/20'>
               <Globe className='w-8 h-8 text-primary' />
             </div>
-            <h1 className='text-3xl sm:text-4xl font-bold tracking-tight lg:text-5xl animate-fade-in'>
-              MetaLens
+            <h1 className='text-3xl sm:text-4xl font-bold tracking-tight lg:text-5xl bg-gradient-to-r from-indigo-600 via-primary to-indigo-400 bg-clip-text text-transparent animate-fade-in'>
+              Meta
+              <span className='text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600'>
+                Lens
+              </span>
             </h1>
             <p className='text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto'>
               Instantly analyze and preview your website&apos;s SEO metadata,
@@ -166,28 +118,21 @@ export default function Home() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className='space-y-4 animate-fade-in'>
-            <div className='flex flex-col sm:flex-row gap-2'>
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div className='flex gap-2'>
               <div className='relative flex-1'>
-                <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
                 <Input
                   type='url'
                   placeholder='Enter website URL (e.g., https://example.com)'
+                  className='pl-9 h-10'
                   value={url}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setUrl(e.target.value)
-                  }
+                  onChange={(e) => setUrl(e.target.value)}
                   required
-                  className='pl-9'
                 />
               </div>
-              <Button
-                type='submit'
-                disabled={loading}
-                size='lg'
-                className='w-full sm:w-auto'
-              >
-                {loading ? (
+              <Button className='h-10 w-20' type='submit' disabled={isLoading}>
+                {isLoading ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Checking...
@@ -200,1029 +145,498 @@ export default function Home() {
           </form>
 
           {error && (
-            <div className='animate-fade-in'>
-              <Alert variant='destructive'>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            </div>
+            <Alert variant='destructive'>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
 
           {metadata && (
-            <div className='animate-fade-in'>
-              <Tabs defaultValue='basic' className='w-full'>
-                <TabsList className='grid w-full grid-cols-5 mb-6'>
-                  <TabsTrigger value='basic'>Basic</TabsTrigger>
-                  <TabsTrigger value='social'>Social</TabsTrigger>
-                  <TabsTrigger value='article'>Article</TabsTrigger>
-                  <TabsTrigger value='technical'>Technical</TabsTrigger>
-                  <TabsTrigger value='additional'>Additional</TabsTrigger>
-                </TabsList>
-                <div className='mt-4 space-y-4'>
-                  <TabsContent value='basic'>
-                    <div className='animate-stagger'>
-                      <Card className='card-hover'>
-                        <CardHeader className='space-y-1 flex items-start justify-between'>
-                          <div>
-                            <CardTitle>Basic Information</CardTitle>
-                            <CardDescription>
-                              Core metadata information about your webpage
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              title: metadata.title,
-                              description: metadata.description,
-                              keywords: metadata.keywords,
-                              author: metadata.author,
-                              generator: metadata.generator,
-                              themeColor: metadata.themeColor,
-                            }}
-                            title='Basic Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Title
-                                </h3>
-                                <CopyButton content={metadata.title} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.title || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Description
-                                </h3>
-                                <CopyButton content={metadata.description} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.description || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Keywords
-                                </h3>
-                                <CopyButton content={metadata.keywords || ''} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.keywords || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Author
-                                </h3>
-                                <CopyButton content={metadata.author || ''} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.author || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Generator
-                                </h3>
-                                <CopyButton
-                                  content={metadata.generator || ''}
-                                />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.generator || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Theme Color
-                                </h3>
-                                <CopyButton
-                                  content={metadata.themeColor || ''}
-                                />
-                              </div>
-                              <div className='flex items-center gap-2'>
-                                {metadata.themeColor && (
-                                  <div
-                                    className='w-4 h-4 rounded border'
-                                    style={{
-                                      backgroundColor: metadata.themeColor,
-                                    }}
-                                  />
-                                )}
-                                <p className='text-sm text-muted-foreground'>
-                                  {metadata.themeColor || 'Not found'}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+            <Tabs defaultValue='basic' className='animate-fade-in'>
+              <TabsList className='grid w-full grid-cols-3 lg:w-[400px] mx-auto'>
+                <TabsTrigger value='basic'>Basic</TabsTrigger>
+                <TabsTrigger value='social'>Social</TabsTrigger>
+                <TabsTrigger value='technical'>Technical</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value='basic' className='space-y-4 animate-stagger'>
+                <MetadataSection
+                  title='Basic Information'
+                  description='Core metadata information about your webpage'
+                  data={{
+                    title: metadata.title,
+                    description: metadata.description,
+                    keywords: metadata.keywords,
+                    author: metadata.author,
+                    generator: metadata.generator,
+                    themeColor: metadata.themeColor,
+                  }}
+                >
+                  <MetadataGrid>
+                    <MetadataField label='Title' value={metadata.title} />
+                    <MetadataField
+                      label='Description'
+                      value={metadata.description}
+                    />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField label='Keywords' value={metadata.keywords} />
+                    <MetadataField label='Author' value={metadata.author} />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Generator'
+                      value={metadata.generator}
+                    />
+                    <MetadataField
+                      label='Theme Color'
+                      value={metadata.themeColor}
+                    />
+                  </MetadataGrid>
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Article Information'
+                  description='Article-specific metadata for better content organization'
+                  data={{
+                    publishedTime: metadata.articlePublishedTime,
+                    modifiedTime: metadata.articleModifiedTime,
+                    author: metadata.articleAuthor,
+                    section: metadata.articleSection,
+                    tags: metadata.articleTags,
+                  }}
+                >
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Published Time'
+                      value={metadata.articlePublishedTime}
+                    />
+                    <MetadataField
+                      label='Modified Time'
+                      value={metadata.articleModifiedTime}
+                    />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Author'
+                      value={metadata.articleAuthor}
+                    />
+                    <MetadataField
+                      label='Section'
+                      value={metadata.articleSection}
+                    />
+                  </MetadataGrid>
+                  <MetadataField label='Tags' value={metadata.articleTags} />
+                </MetadataSection>
+              </TabsContent>
+
+              <TabsContent value='social' className='space-y-4 animate-stagger'>
+                <MetadataSection
+                  title='Open Graph'
+                  description='Social media sharing information using Open Graph protocol'
+                  data={{
+                    ogTitle: metadata.ogTitle,
+                    ogDescription: metadata.ogDescription,
+                    ogType: metadata.ogType,
+                    ogSiteName: metadata.ogSiteName,
+                    ogUrl: metadata.ogUrl,
+                    ogLocale: metadata.ogLocale,
+                    ogImage: metadata.ogImage,
+                    ogImageWidth: metadata.ogImageWidth,
+                    ogImageHeight: metadata.ogImageHeight,
+                    ogImageAlt: metadata.ogImageAlt,
+                    ogVideo: metadata.ogVideo,
+                    ogAudio: metadata.ogAudio,
+                  }}
+                >
+                  <MetadataGrid>
+                    <MetadataField label='OG Title' value={metadata.ogTitle} />
+                    <MetadataField
+                      label='OG Description'
+                      value={metadata.ogDescription}
+                    />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField label='OG Type' value={metadata.ogType} />
+                    <MetadataField
+                      label='OG Site Name'
+                      value={metadata.ogSiteName}
+                    />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField
+                      label='OG URL'
+                      value={metadata.ogUrl}
+                      type='url'
+                    />
+                    <MetadataField
+                      label='OG Locale'
+                      value={metadata.ogLocale}
+                    />
+                  </MetadataGrid>
+                  <MetadataField
+                    label='OG Image'
+                    value={metadata.ogImage}
+                    type='image'
+                  />
+                  {metadata.ogImageAlt && (
+                    <MetadataField
+                      label='OG Image Alt'
+                      value={metadata.ogImageAlt}
+                    />
+                  )}
+                  {metadata.ogVideo && (
+                    <MetadataField
+                      label='OG Video'
+                      value={metadata.ogVideo}
+                      type='url'
+                    />
+                  )}
+                  {metadata.ogAudio && (
+                    <MetadataField
+                      label='OG Audio'
+                      value={metadata.ogAudio}
+                      type='url'
+                    />
+                  )}
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Facebook'
+                  description='Facebook-specific metadata and verification'
+                  data={{
+                    appId: metadata.fbAppId,
+                    pages: metadata.fbPages,
+                    domainVerification: metadata.fbDomainVerification,
+                  }}
+                >
+                  <MetadataGrid>
+                    <MetadataField label='App ID' value={metadata.fbAppId} />
+                    <MetadataField label='Pages' value={metadata.fbPages} />
+                  </MetadataGrid>
+                  <MetadataField
+                    label='Domain Verification'
+                    value={metadata.fbDomainVerification}
+                  />
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Twitter Card'
+                  description='Twitter-specific social media information'
+                  data={{
+                    cardType: metadata.twitterCard,
+                    title: metadata.twitterTitle,
+                    description: metadata.twitterDescription,
+                    site: metadata.twitterSite,
+                    creator: metadata.twitterCreator,
+                    image: metadata.twitterImage,
+                    imageAlt: metadata.twitterImageAlt,
+                    domainVerification: metadata.twitterDomainVerification,
+                  }}
+                >
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Card Type'
+                      value={metadata.twitterCard}
+                    />
+                    <MetadataField
+                      label='Title'
+                      value={metadata.twitterTitle}
+                    />
+                  </MetadataGrid>
+                  <MetadataField
+                    label='Description'
+                    value={metadata.twitterDescription}
+                  />
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Site (@username)'
+                      value={metadata.twitterSite}
+                    />
+                    <MetadataField
+                      label='Creator (@username)'
+                      value={metadata.twitterCreator}
+                    />
+                  </MetadataGrid>
+                  <MetadataField
+                    label='Image'
+                    value={metadata.twitterImage}
+                    type='image'
+                  />
+                  {metadata.twitterImageAlt && (
+                    <MetadataField
+                      label='Image Alt'
+                      value={metadata.twitterImageAlt}
+                    />
+                  )}
+                  {metadata.twitterDomainVerification && (
+                    <MetadataField
+                      label='Domain Verification'
+                      value={metadata.twitterDomainVerification}
+                    />
+                  )}
+                </MetadataSection>
+
+                <MetadataSection
+                  title='WhatsApp Preview'
+                  description='How your link appears when shared on WhatsApp'
+                  data={{
+                    title: metadata.whatsappTitle,
+                    description: metadata.whatsappDescription,
+                    image: metadata.whatsappImage,
+                  }}
+                >
+                  <MetadataField label='Title' value={metadata.whatsappTitle} />
+                  <MetadataField
+                    label='Description'
+                    value={metadata.whatsappDescription}
+                  />
+                  <MetadataField
+                    label='Image'
+                    value={metadata.whatsappImage}
+                    type='image'
+                  />
+                </MetadataSection>
+
+                <MetadataSection
+                  title='LinkedIn Preview'
+                  description='How your link appears when shared on LinkedIn'
+                  data={{
+                    title: metadata.linkedinTitle,
+                    description: metadata.linkedinDescription,
+                    author: metadata.linkedinAuthor,
+                    image: metadata.linkedinImage,
+                  }}
+                >
+                  <MetadataField label='Title' value={metadata.linkedinTitle} />
+                  <MetadataField
+                    label='Description'
+                    value={metadata.linkedinDescription}
+                  />
+                  <MetadataField
+                    label='Author'
+                    value={metadata.linkedinAuthor}
+                  />
+                  <MetadataField
+                    label='Image'
+                    value={metadata.linkedinImage}
+                    type='image'
+                  />
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Pinterest Preview'
+                  description='How your link appears when shared on Pinterest'
+                  data={{
+                    description: metadata.pinterestDescription,
+                    image: metadata.pinterestImage,
+                    domainVerification: metadata.pinterestDomainVerification,
+                  }}
+                >
+                  <MetadataField
+                    label='Description'
+                    value={metadata.pinterestDescription}
+                  />
+                  <MetadataField
+                    label='Image'
+                    value={metadata.pinterestImage}
+                    type='image'
+                  />
+                  {metadata.pinterestDomainVerification && (
+                    <MetadataField
+                      label='Domain Verification'
+                      value={metadata.pinterestDomainVerification}
+                    />
+                  )}
+                </MetadataSection>
+              </TabsContent>
+
+              <TabsContent
+                value='technical'
+                className='space-y-4 animate-stagger'
+              >
+                <MetadataSection
+                  title='Technical Information'
+                  description='Technical metadata and settings'
+                  data={{
+                    canonicalUrl: metadata.canonicalUrl,
+                    robots: metadata.robots,
+                    viewport: metadata.viewport,
+                    charset: metadata.charset,
+                    language: metadata.language,
+                    manifest: metadata.manifest,
+                    favicon: metadata.favicon,
+                    appleTouchIcon: metadata.appleTouchIcon,
+                  }}
+                >
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Canonical URL'
+                      value={metadata.canonicalUrl}
+                      type='url'
+                    />
+                    <MetadataField label='Robots' value={metadata.robots} />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField label='Viewport' value={metadata.viewport} />
+                    <MetadataField label='Charset' value={metadata.charset} />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField label='Language' value={metadata.language} />
+                    <MetadataField
+                      label='Manifest'
+                      value={metadata.manifest}
+                      type='url'
+                    />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Favicon'
+                      value={metadata.favicon}
+                      type='url'
+                    />
+                    <MetadataField
+                      label='Apple Touch Icon'
+                      value={metadata.appleTouchIcon}
+                      type='url'
+                    />
+                  </MetadataGrid>
+                </MetadataSection>
+
+                <MetadataSection
+                  title='Sitemap & Robots.txt'
+                  description='Search engine crawling configuration'
+                  data={{
+                    sitemapUrl: metadata.sitemapUrl,
+                    robotsTxtContent: metadata.robotsTxtContent,
+                  }}
+                >
+                  <MetadataGrid>
+                    <div className='space-y-2'>
+                      <h3 className='font-medium text-primary'>
+                        Sitemap Status
+                      </h3>
+                      <div className='flex items-center gap-2'>
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            metadata.sitemapExists
+                              ? 'bg-green-500'
+                              : 'bg-red-500'
+                          }`}
+                        />
+                        <p className='text-sm text-muted-foreground'>
+                          {metadata.sitemapExists
+                            ? 'Sitemap found'
+                            : 'No sitemap detected'}
+                        </p>
+                      </div>
+                      {metadata.sitemapUrl && (
+                        <MetadataField
+                          label='URL'
+                          value={metadata.sitemapUrl}
+                          type='url'
+                        />
+                      )}
                     </div>
-                  </TabsContent>
-
-                  <TabsContent value='social'>
-                    <div className='animate-stagger space-y-4'>
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <div>
-                            <CardTitle>Open Graph</CardTitle>
-                            <CardDescription>
-                              Social media sharing information using Open Graph
-                              protocol
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              ogTitle: metadata.ogTitle,
-                              ogDescription: metadata.ogDescription,
-                              ogType: metadata.ogType,
-                              ogSiteName: metadata.ogSiteName,
-                              ogUrl: metadata.ogUrl,
-                              ogLocale: metadata.ogLocale,
-                              ogImage: metadata.ogImage,
-                              ogImageWidth: metadata.ogImageWidth,
-                              ogImageHeight: metadata.ogImageHeight,
-                              ogImageAlt: metadata.ogImageAlt,
-                              ogVideo: metadata.ogVideo,
-                              ogAudio: metadata.ogAudio,
-                            }}
-                            title='Open Graph Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-8'>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  OG Title
-                                </h3>
-                                <CopyButton content={metadata.ogTitle || ''} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.ogTitle || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  OG Description
-                                </h3>
-                                <CopyButton
-                                  content={metadata.ogDescription || ''}
-                                />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.ogDescription || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                OG Type
-                              </h3>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.ogType || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                OG Site Name
-                              </h3>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.ogSiteName || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                OG URL
-                              </h3>
-                              <div className='text-sm text-muted-foreground'>
-                                {formatUrl(metadata.ogUrl)}
-                              </div>
-                            </div>
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                OG Locale
-                              </h3>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.ogLocale || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='space-y-2'>
-                            <h3 className='font-medium text-primary'>
-                              OG Image
-                            </h3>
-                            <div className='text-sm text-muted-foreground mb-2'>
-                              {formatUrl(metadata.ogImage)}
-                            </div>
-                            {metadata.ogImageWidth &&
-                              metadata.ogImageHeight && (
-                                <p className='text-sm text-muted-foreground mb-2'>
-                                  Dimensions: {metadata.ogImageWidth} x{' '}
-                                  {metadata.ogImageHeight}
-                                </p>
-                              )}
-                            {metadata.ogImageAlt && (
-                              <p className='text-sm text-muted-foreground mb-2'>
-                                Alt text: {metadata.ogImageAlt}
-                              </p>
-                            )}
-                            <ImagePreview
-                              src={metadata.ogImage}
-                              alt='Open Graph Image'
-                              title='Open Graph Image Preview'
-                            />
-                          </div>
-                          {metadata.ogVideo && (
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                OG Video
-                              </h3>
-                              <div className='text-sm text-muted-foreground'>
-                                {formatUrl(metadata.ogVideo)}
-                              </div>
-                            </div>
-                          )}
-                          {metadata.ogAudio && (
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                OG Audio
-                              </h3>
-                              <div className='text-sm text-muted-foreground'>
-                                {formatUrl(metadata.ogAudio)}
-                              </div>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <div>
-                            <CardTitle>Facebook</CardTitle>
-                            <CardDescription>
-                              Facebook-specific metadata and verification
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              appId: metadata.fbAppId,
-                              pages: metadata.fbPages,
-                              domainVerification: metadata.fbDomainVerification,
-                            }}
-                            title='Facebook Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  App ID
-                                </h3>
-                                <CopyButton content={metadata.fbAppId} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.fbAppId || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Pages
-                                </h3>
-                                <CopyButton content={metadata.fbPages} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.fbPages || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Domain Verification
-                              </h3>
-                              <CopyButton
-                                content={metadata.fbDomainVerification}
-                              />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.fbDomainVerification || 'Not found'}
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <div>
-                            <CardTitle>Twitter Card</CardTitle>
-                            <CardDescription>
-                              Twitter-specific social media information
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              cardType: metadata.twitterCard,
-                              title: metadata.twitterTitle,
-                              description: metadata.twitterDescription,
-                              site: metadata.twitterSite,
-                              creator: metadata.twitterCreator,
-                              image: metadata.twitterImage,
-                              imageAlt: metadata.twitterImageAlt,
-                              domainVerification:
-                                metadata.twitterDomainVerification,
-                            }}
-                            title='Twitter Card Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-8'>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Card Type
-                                </h3>
-                                <CopyButton content={metadata.twitterCard} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.twitterCard || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Title
-                                </h3>
-                                <CopyButton content={metadata.twitterTitle} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.twitterTitle || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Description
-                              </h3>
-                              <CopyButton
-                                content={metadata.twitterDescription}
-                              />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.twitterDescription || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Site (@username)
-                                </h3>
-                                <CopyButton content={metadata.twitterSite} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.twitterSite || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Creator (@username)
-                                </h3>
-                                <CopyButton content={metadata.twitterCreator} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.twitterCreator || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Image
-                              </h3>
-                              <CopyButton content={metadata.twitterImage} />
-                            </div>
-                            <div className='text-sm text-muted-foreground mb-2'>
-                              {formatUrl(metadata.twitterImage)}
-                            </div>
-                            {metadata.twitterImageAlt && (
-                              <div>
-                                <div className='flex items-center gap-2'>
-                                  <p className='text-sm text-muted-foreground mb-2'>
-                                    Alt text:
-                                  </p>
-                                  <CopyButton
-                                    content={metadata.twitterImageAlt}
-                                  />
-                                </div>
-                                <p className='text-sm text-muted-foreground mb-2'>
-                                  {metadata.twitterImageAlt}
-                                </p>
-                              </div>
-                            )}
-                            <ImagePreview
-                              src={metadata.twitterImage}
-                              alt='Twitter Card Image'
-                              title='Twitter Card Image Preview'
-                            />
-                          </div>
-                          {metadata.twitterDomainVerification && (
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Domain Verification
-                                </h3>
-                                <CopyButton
-                                  content={metadata.twitterDomainVerification}
-                                />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.twitterDomainVerification}
-                              </p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <div>
-                            <CardTitle>WhatsApp Preview</CardTitle>
-                            <CardDescription>
-                              How your link appears when shared on WhatsApp
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              title: metadata.whatsappTitle,
-                              description: metadata.whatsappDescription,
-                              image: metadata.whatsappImage,
-                            }}
-                            title='WhatsApp Preview Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Title
-                              </h3>
-                              <CopyButton content={metadata.whatsappTitle} />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.whatsappTitle || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Description
-                              </h3>
-                              <CopyButton
-                                content={metadata.whatsappDescription}
-                              />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.whatsappDescription || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Image
-                              </h3>
-                              <CopyButton content={metadata.whatsappImage} />
-                            </div>
-                            <ImagePreview
-                              src={metadata.whatsappImage}
-                              alt='WhatsApp Preview Image'
-                              title='WhatsApp Preview Image'
-                            />
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <div>
-                            <CardTitle>LinkedIn Preview</CardTitle>
-                            <CardDescription>
-                              How your link appears when shared on LinkedIn
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              title: metadata.linkedinTitle,
-                              description: metadata.linkedinDescription,
-                              author: metadata.linkedinAuthor,
-                              image: metadata.linkedinImage,
-                            }}
-                            title='LinkedIn Preview Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Title
-                              </h3>
-                              <CopyButton content={metadata.linkedinTitle} />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.linkedinTitle || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Description
-                              </h3>
-                              <CopyButton
-                                content={metadata.linkedinDescription}
-                              />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.linkedinDescription || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Author
-                              </h3>
-                              <CopyButton content={metadata.linkedinAuthor} />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.linkedinAuthor || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Image
-                              </h3>
-                              <CopyButton content={metadata.linkedinImage} />
-                            </div>
-                            <ImagePreview
-                              src={metadata.linkedinImage}
-                              alt='LinkedIn Preview Image'
-                              title='LinkedIn Preview Image'
-                            />
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <div>
-                            <CardTitle>Pinterest Preview</CardTitle>
-                            <CardDescription>
-                              How your link appears when shared on Pinterest
-                            </CardDescription>
-                          </div>
-                          <CopyAllButton
-                            data={{
-                              description: metadata.pinterestDescription,
-                              image: metadata.pinterestImage,
-                              domainVerification:
-                                metadata.pinterestDomainVerification,
-                            }}
-                            title='Pinterest Preview Information'
-                          />
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Description
-                              </h3>
-                              <CopyButton
-                                content={metadata.pinterestDescription}
-                              />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.pinterestDescription || 'Not found'}
-                            </p>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>
-                                Image
-                              </h3>
-                              <CopyButton content={metadata.pinterestImage} />
-                            </div>
-                            <ImagePreview
-                              src={metadata.pinterestImage}
-                              alt='Pinterest Preview Image'
-                              title='Pinterest Preview Image'
-                            />
-                          </div>
-                          {metadata.pinterestDomainVerification && (
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Domain Verification
-                                </h3>
-                                <CopyButton
-                                  content={metadata.pinterestDomainVerification}
-                                />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.pinterestDomainVerification}
-                              </p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                    <div className='space-y-2'>
+                      <h3 className='font-medium text-primary'>
+                        Robots.txt Status
+                      </h3>
+                      <div className='flex items-center gap-2'>
+                        <div
+                          className={`w-2 h-2 rounded-full ${
+                            metadata.robotsTxtExists
+                              ? 'bg-green-500'
+                              : 'bg-red-500'
+                          }`}
+                        />
+                        <p className='text-sm text-muted-foreground'>
+                          {metadata.robotsTxtExists
+                            ? 'robots.txt found'
+                            : 'No robots.txt detected'}
+                        </p>
+                      </div>
                     </div>
-                  </TabsContent>
-
-                  <TabsContent value='article'>
-                    <div className='animate-stagger'>
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <CardTitle>Article Information</CardTitle>
-                          <CardDescription>
-                            Article-specific metadata for better content
-                            organization
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Published Time
-                                </h3>
-                                <CopyButton
-                                  content={metadata.articlePublishedTime}
-                                />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.articlePublishedTime || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Modified Time
-                                </h3>
-                                <CopyButton
-                                  content={metadata.articleModifiedTime}
-                                />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.articleModifiedTime || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Author
-                                </h3>
-                                <CopyButton content={metadata.articleAuthor} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.articleAuthor || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Section
-                                </h3>
-                                <CopyButton content={metadata.articleSection} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.articleSection || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                          <div className='space-y-2'>
-                            <div className='flex items-center gap-2'>
-                              <h3 className='font-medium text-primary'>Tags</h3>
-                              <CopyButton content={metadata.articleTags} />
-                            </div>
-                            <p className='text-sm text-muted-foreground break-words'>
-                              {metadata.articleTags || 'Not found'}
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
+                  </MetadataGrid>
+                  {metadata.robotsTxtContent && (
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-2'>
+                        <h3 className='font-medium text-primary'>
+                          Robots.txt Content
+                        </h3>
+                        <CopyButton content={metadata.robotsTxtContent} />
+                      </div>
+                      <pre className='text-sm text-muted-foreground bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap'>
+                        {metadata.robotsTxtContent}
+                      </pre>
                     </div>
-                  </TabsContent>
+                  )}
+                </MetadataSection>
 
-                  <TabsContent value='technical'>
-                    <div className='animate-stagger'>
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <CardTitle>Technical Information</CardTitle>
-                          <CardDescription>
-                            Technical metadata and settings
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className='grid gap-6'>
-                            <div className='grid gap-6 md:grid-cols-2'>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Canonical URL
-                                  </h3>
-                                  <CopyButton content={metadata.canonicalUrl} />
-                                </div>
-                                <div className='text-sm text-muted-foreground'>
-                                  {formatUrl(metadata.canonicalUrl)}
-                                </div>
-                              </div>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Robots
-                                  </h3>
-                                  <CopyButton content={metadata.robots} />
-                                </div>
-                                <p className='text-sm text-muted-foreground break-words'>
-                                  {metadata.robots || 'Not found'}
-                                </p>
-                              </div>
-                            </div>
-                            <div className='grid gap-6 md:grid-cols-2'>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Viewport
-                                  </h3>
-                                  <CopyButton content={metadata.viewport} />
-                                </div>
-                                <p className='text-sm text-muted-foreground break-words'>
-                                  {metadata.viewport || 'Not found'}
-                                </p>
-                              </div>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Charset
-                                  </h3>
-                                  <CopyButton content={metadata.charset} />
-                                </div>
-                                <p className='text-sm text-muted-foreground break-words'>
-                                  {metadata.charset || 'Not found'}
-                                </p>
-                              </div>
-                            </div>
-                            <div className='grid gap-6 md:grid-cols-2'>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Language
-                                  </h3>
-                                  <CopyButton content={metadata.language} />
-                                </div>
-                                <p className='text-sm text-muted-foreground break-words'>
-                                  {metadata.language || 'Not found'}
-                                </p>
-                              </div>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Manifest
-                                  </h3>
-                                  <CopyButton content={metadata.manifest} />
-                                </div>
-                                <div className='text-sm text-muted-foreground'>
-                                  {formatUrl(metadata.manifest)}
-                                </div>
-                              </div>
-                            </div>
-                            <div className='grid gap-6 md:grid-cols-2'>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Favicon
-                                  </h3>
-                                  <CopyButton content={metadata.favicon} />
-                                </div>
-                                <div className='text-sm text-muted-foreground'>
-                                  {formatUrl(metadata.favicon)}
-                                </div>
-                              </div>
-                              <div className='space-y-2'>
-                                <div className='flex items-center gap-2'>
-                                  <h3 className='font-medium text-primary'>
-                                    Apple Touch Icon
-                                  </h3>
-                                  <CopyButton
-                                    content={metadata.appleTouchIcon}
-                                  />
-                                </div>
-                                <div className='text-sm text-muted-foreground'>
-                                  {formatUrl(metadata.appleTouchIcon)}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card className='card-hover mt-4'>
-                        <CardHeader>
-                          <CardTitle>Sitemap & Robots.txt</CardTitle>
-                          <CardDescription>
-                            Search engine crawling configuration
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                Sitemap Status
-                              </h3>
-                              <div className='flex items-center gap-2'>
-                                <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    metadata.sitemapExists
-                                      ? 'bg-green-500'
-                                      : 'bg-red-500'
-                                  }`}
-                                />
-                                <p className='text-sm text-muted-foreground'>
-                                  {metadata.sitemapExists
-                                    ? 'Sitemap found'
-                                    : 'No sitemap detected'}
-                                </p>
-                              </div>
-                              {metadata.sitemapUrl && (
-                                <div>
-                                  <div className='flex items-center gap-2 mt-2'>
-                                    <h4 className='text-sm font-medium text-primary'>
-                                      URL
-                                    </h4>
-                                    <CopyButton content={metadata.sitemapUrl} />
-                                  </div>
-                                  <div className='text-sm text-muted-foreground mt-1'>
-                                    {formatUrl(metadata.sitemapUrl)}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <div className='space-y-2'>
-                              <h3 className='font-medium text-primary'>
-                                Robots.txt Status
-                              </h3>
-                              <div className='flex items-center gap-2'>
-                                <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    metadata.robotsTxtExists
-                                      ? 'bg-green-500'
-                                      : 'bg-red-500'
-                                  }`}
-                                />
-                                <p className='text-sm text-muted-foreground'>
-                                  {metadata.robotsTxtExists
-                                    ? 'robots.txt found'
-                                    : 'No robots.txt detected'}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          {metadata.robotsTxtContent && (
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Robots.txt Content
-                                </h3>
-                                <CopyButton
-                                  content={metadata.robotsTxtContent}
-                                />
-                              </div>
-                              <pre className='text-sm text-muted-foreground bg-muted p-4 rounded-lg overflow-x-auto whitespace-pre-wrap'>
-                                {metadata.robotsTxtContent}
-                              </pre>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value='additional'>
-                    <div className='animate-stagger'>
-                      <Card className='card-hover'>
-                        <CardHeader>
-                          <CardTitle>Additional Information</CardTitle>
-                          <CardDescription>
-                            Extra metadata and SEO-related information
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className='space-y-6'>
-                          {metadata.alternateUrls && (
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Alternate URLs
-                                </h3>
-                                <CopyButton
-                                  content={Object.entries(
-                                    metadata.alternateUrls
-                                  )
-                                    .map(([lang, url]) => `${lang}: ${url}`)
-                                    .join('\n')}
-                                />
-                              </div>
-                              <div className='space-y-2'>
-                                {Object.entries(metadata.alternateUrls).map(
-                                  ([lang, url]) => (
-                                    <div key={lang} className='flex gap-2'>
-                                      <span className='text-sm font-medium'>
-                                        {lang}:
-                                      </span>
-                                      <div className='text-sm text-muted-foreground'>
-                                        {formatUrl(url)}
-                                      </div>
-                                    </div>
-                                  )
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Previous Page
-                                </h3>
-                                <CopyButton content={metadata.prevPage} />
-                              </div>
+                <MetadataSection
+                  title='Additional Information'
+                  description='Extra metadata and SEO-related information'
+                  data={{
+                    alternateUrls: metadata.alternateUrls
+                      ? Object.entries(metadata.alternateUrls)
+                          .map(([lang, url]) => `${lang}: ${url}`)
+                          .join('\n')
+                      : undefined,
+                    prevPage: metadata.prevPage,
+                    nextPage: metadata.nextPage,
+                    rating: metadata.rating,
+                    referrer: metadata.referrer,
+                  }}
+                >
+                  {metadata.alternateUrls && (
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-2'>
+                        <h3 className='font-medium text-primary'>
+                          Alternate URLs
+                        </h3>
+                        <CopyButton
+                          content={Object.entries(metadata.alternateUrls)
+                            .map(([lang, url]) => `${lang}: ${url}`)
+                            .join('\n')}
+                        />
+                      </div>
+                      <div className='space-y-2'>
+                        {Object.entries(metadata.alternateUrls).map(
+                          ([lang, url]) => (
+                            <div key={lang} className='flex gap-2'>
+                              <span className='text-sm font-medium'>
+                                {lang}:
+                              </span>
                               <div className='text-sm text-muted-foreground'>
-                                {formatUrl(metadata.prevPage)}
+                                {formatUrl(url)}
                               </div>
                             </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Next Page
-                                </h3>
-                                <CopyButton content={metadata.nextPage} />
-                              </div>
-                              <div className='text-sm text-muted-foreground'>
-                                {formatUrl(metadata.nextPage)}
-                              </div>
-                            </div>
-                          </div>
-                          <div className='grid gap-6 md:grid-cols-2'>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Rating
-                                </h3>
-                                <CopyButton content={metadata.rating} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.rating || 'Not found'}
-                              </p>
-                            </div>
-                            <div className='space-y-2'>
-                              <div className='flex items-center gap-2'>
-                                <h3 className='font-medium text-primary'>
-                                  Referrer Policy
-                                </h3>
-                                <CopyButton content={metadata.referrer} />
-                              </div>
-                              <p className='text-sm text-muted-foreground break-words'>
-                                {metadata.referrer || 'Not found'}
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </div>
+                  )}
+                  <MetadataGrid>
+                    <MetadataField
+                      label='Previous Page'
+                      value={metadata.prevPage}
+                      type='url'
+                    />
+                    <MetadataField
+                      label='Next Page'
+                      value={metadata.nextPage}
+                      type='url'
+                    />
+                  </MetadataGrid>
+                  <MetadataGrid>
+                    <MetadataField label='Rating' value={metadata.rating} />
+                    <MetadataField
+                      label='Referrer Policy'
+                      value={metadata.referrer}
+                    />
+                  </MetadataGrid>
+                </MetadataSection>
+              </TabsContent>
+            </Tabs>
           )}
         </div>
       </div>
