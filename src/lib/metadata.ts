@@ -1,3 +1,5 @@
+import * as cheerio from 'cheerio'
+
 export interface MetadataResult {
   // Basic SEO
   title?: string
@@ -81,26 +83,35 @@ export interface MetadataResult {
 
 export async function fetchMetadata(url: string): Promise<MetadataResult> {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (compatible; MetaLens/1.0; +https://metalens.dev)',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch URL: ${response.status} ${response.statusText}`
+      )
+    }
+
     const html = await response.text()
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(html, 'text/html')
+    const $ = cheerio.load(html)
 
     // Helper function to get meta content
     const getMeta = (name: string, attr: string = 'name') =>
-      doc.querySelector(`meta[${attr}="${name}"]`)?.getAttribute('content') ||
-      undefined
+      $(`meta[${attr}="${name}"]`).attr('content') || undefined
 
     // Helper function to get link href
     const getLink = (rel: string) =>
-      doc.querySelector(`link[rel="${rel}"]`)?.getAttribute('href') || undefined
+      $(`link[rel="${rel}"]`).attr('href') || undefined
 
     // Get alternate URLs
-    const alternateLinks = doc.querySelectorAll('link[rel="alternate"]')
     const alternateUrls: { [key: string]: string } = {}
-    alternateLinks.forEach((link) => {
-      const hreflang = link.getAttribute('hreflang')
-      const href = link.getAttribute('href')
+    $('link[rel="alternate"]').each((_, el) => {
+      const hreflang = $(el).attr('hreflang')
+      const href = $(el).attr('href')
       if (hreflang && href) {
         alternateUrls[hreflang] = href
       }
@@ -156,7 +167,7 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
 
     return {
       // Basic SEO
-      title: doc.querySelector('title')?.textContent || undefined,
+      title: $('title').text() || undefined,
       description: getMeta('description'),
       keywords: getMeta('keywords'),
       author: getMeta('author'),
@@ -196,10 +207,8 @@ export async function fetchMetadata(url: string): Promise<MetadataResult> {
       canonicalUrl: getLink('canonical'),
       robots: getMeta('robots'),
       viewport: getMeta('viewport'),
-      charset:
-        doc.querySelector('meta[charset]')?.getAttribute('charset') ||
-        undefined,
-      language: doc.querySelector('html')?.getAttribute('lang') || undefined,
+      charset: $('meta[charset]').attr('charset') || undefined,
+      language: $('html').attr('lang') || undefined,
       favicon: getLink('icon') || getLink('shortcut icon'),
       appleTouchIcon: getLink('apple-touch-icon'),
       manifest: getLink('manifest'),

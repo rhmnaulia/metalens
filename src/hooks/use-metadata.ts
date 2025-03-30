@@ -1,5 +1,4 @@
 import { useMutation } from '@tanstack/react-query'
-import { fetchMetadata } from '@/lib/metadata'
 
 const validateUrl = (url: string): string | null => {
   if (!url) {
@@ -29,7 +28,21 @@ export function useMetadata() {
       if (validationError) {
         throw new Error(validationError)
       }
-      return fetchMetadata(url)
+
+      const response = await fetch('/api/metadata', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to fetch metadata')
+      }
+
+      return response.json()
     },
     onError: (error) => {
       console.error('Error fetching metadata:', error)
