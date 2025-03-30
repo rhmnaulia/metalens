@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
@@ -6,7 +6,15 @@ import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#ffffff',
+}
+
 export const metadata: Metadata = {
+  metadataBase: new URL('https://metalens.dev'),
   title: 'MetaLens - Instant SEO & Social Media Preview Tool',
   description:
     "Analyze and preview your website's SEO metadata, social cards, and technical tags in real-time. Get instant insights for better visibility.",
@@ -41,12 +49,6 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
     creator: '@rhmnaul',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
-  themeColor: '#ffffff',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',

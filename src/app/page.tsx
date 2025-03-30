@@ -543,7 +543,9 @@ export default function Home() {
                                 {lang}:
                               </span>
                               <div className='text-sm text-muted-foreground'>
-                                {formatUrl(url)}
+                                {typeof url === 'string'
+                                  ? formatUrl(url)
+                                  : 'Invalid URL'}
                               </div>
                             </div>
                           )
