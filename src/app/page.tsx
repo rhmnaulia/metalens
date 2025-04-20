@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -17,12 +18,24 @@ import './animations.css'
 import { cn } from '@/lib/utils'
 
 export default function Home() {
-  const [url, setUrl] = useState('')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const urlParam = searchParams.get('url') || ''
   const { checkMetadata, metadata, errorMessage, isPending } = useMetadata()
+
+  useEffect(() => {
+    if (urlParam) {
+      checkMetadata(urlParam)
+    }
+  }, [urlParam, checkMetadata])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    checkMetadata(url)
+    const formData = new FormData(e.target as HTMLFormElement)
+    const url = formData.get('url') as string
+    if (url) {
+      router.push(`/?url=${encodeURIComponent(url)}`)
+    }
   }
 
   return (
@@ -70,10 +83,10 @@ export default function Home() {
                     <Search className='h-4 w-4 text-muted-foreground' />
                   </div>
                   <Input
+                    name='url'
                     type='url'
                     placeholder='Enter website URL (e.g., https://example.com)'
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
+                    defaultValue={urlParam}
                     className={cn(
                       'pl-10 pr-20 h-12',
                       errorMessage &&
