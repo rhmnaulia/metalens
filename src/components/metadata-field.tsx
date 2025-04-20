@@ -21,7 +21,7 @@ export function MetadataField({
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center justify-between gap-2'>
         <h3 className='font-medium text-primary'>{label}</h3>
         <CopyButton content={value} />
       </div>
