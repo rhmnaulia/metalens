@@ -13,13 +13,8 @@ import { CopyButton } from '@/components/copy-button'
 import { formatUrl } from '@/lib/utils'
 import { GITHUB_REPO_URL } from '@/lib/constants'
 import { useMetadata } from '@/hooks/use-metadata'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import './animations.css'
+import { cn } from '@/lib/utils'
 
 export default function Home() {
   const [url, setUrl] = useState('')
@@ -46,68 +41,90 @@ export default function Home() {
 
       <div className='container mx-auto py-16 px-6 sm:px-6 lg:px-8'>
         <div className='max-w-4xl mx-auto space-y-8 animate-fade-in'>
-          <div className='text-center space-y-4'>
-            <h1 className='text-4xl font-bold tracking-tight lg:text-5xl bg-gradient-to-r from-indigo-600 via-primary to-indigo-400 bg-clip-text text-transparent animate-fade-in'>
-              Meta
-              <span className='text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600'>
-                Lens
-              </span>
-            </h1>
-            <p className='text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto'>
+          <div className='text-center space-y-6'>
+            <div className='relative inline-block'>
+              <div className='absolute -top-8 -left-8 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse' />
+              <div className='absolute -bottom-8 -right-8 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl animate-pulse' />
+              <div className='flex items-center justify-center gap-3'>
+                <div className='relative w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 p-0.5'>
+                  <div className='w-full h-full rounded-[10px] bg-background flex items-center justify-center'>
+                    <Search className='w-6 h-6 text-indigo-600' />
+                  </div>
+                </div>
+                <h1 className='relative text-5xl sm:text-6xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 via-primary to-indigo-400 bg-clip-text text-transparent animate-fade-in'>
+                  Meta
+                  <span className='text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600'>
+                    Lens
+                  </span>
+                </h1>
+              </div>
+            </div>
+            <p className='text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed'>
               Instantly analyze and preview your website&apos;s SEO metadata,
               social cards, and technical tags for better visibility
             </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className='space-y-4'>
-            <div className='flex gap-2'>
-              <div className='relative flex-1'>
-                <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-                <Input
-                  type='url'
-                  placeholder='Enter website URL (e.g., https://example.com)'
-                  className='pl-9 pr-9 h-10'
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  required
-                />
-                <TooltipProvider>
-                  {errorMessage && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <XCircle className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-destructive animate-fade-in' />
-                      </TooltipTrigger>
-                      <TooltipContent className='bg-destructive text-destructive-foreground'>
-                        <p>{errorMessage}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                  {metadata && !errorMessage && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <CheckCircle2 className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-500 animate-fade-in' />
-                      </TooltipTrigger>
-                      <TooltipContent className='bg-green-500 text-white'>
-                        <p>Successfully retrieved metadata!</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </TooltipProvider>
-              </div>
-              <Button
-                type='submit'
-                className='h-10 w-20'
-                size='lg'
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                ) : (
-                  'Check'
+            <form onSubmit={handleSubmit} className='max-w-2xl mx-auto'>
+              <div className='relative flex flex-col gap-2'>
+                <div className='relative flex items-center'>
+                  <div className='absolute left-4 flex items-center pointer-events-none'>
+                    <Search className='h-4 w-4 text-muted-foreground' />
+                  </div>
+                  <Input
+                    type='url'
+                    placeholder='Enter website URL (e.g., https://example.com)'
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className={cn(
+                      'pl-10 pr-20 h-12',
+                      errorMessage &&
+                        'border-destructive focus-visible:ring-destructive'
+                    )}
+                    required
+                  />
+                  <Button
+                    type='submit'
+                    className='absolute right-2 px-4 h-8'
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <Loader2 className='h-4 w-4 animate-spin' />
+                    ) : (
+                      'Check'
+                    )}
+                  </Button>
+                </div>
+                {errorMessage && (
+                  <p className='text-sm text-destructive animate-fade-in flex items-center gap-2'>
+                    <XCircle className='h-4 w-4' />
+                    {errorMessage}
+                  </p>
                 )}
+              </div>
+            </form>
+            <div className='flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground'>
+              <Button variant='outline' asChild className='h-8'>
+                <a
+                  href={GITHUB_REPO_URL}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex items-center gap-2'
+                >
+                  <Github className='h-4 w-4' />
+                  Star on GitHub
+                </a>
               </Button>
+              <div className='flex items-center gap-6'>
+                <div className='flex items-center gap-2'>
+                  <CheckCircle2 className='h-4 w-4 text-green-500' />
+                  <span>Free & Open Source</span>
+                </div>
+                <div className='flex items-center gap-2'>
+                  <CheckCircle2 className='h-4 w-4 text-green-500' />
+                  <span>No Sign Up Required</span>
+                </div>
+              </div>
             </div>
-          </form>
+          </div>
 
           {metadata && (
             <Tabs defaultValue='basic' className='animate-fade-in'>
